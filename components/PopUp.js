@@ -6,7 +6,6 @@ import CrossIcon from '../Icons/CrossIcon';
 import PopUpButton from './Utils/PopUpButton';
 
 const PopUp = () => {
-    const [selected, setSelected] = useState([]);
     const [selectedTimes, setSelectedTimes] = useState([]);
     const [weekDates, setWeekDates] = useState(takeWeek());
 
@@ -14,8 +13,8 @@ const PopUp = () => {
     const weekDays = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
     const randomTime = [
         ['14:30', '15:30', '16:30', '17:30', '18:30', '19:30'],
-        ['12:30', '16:30', '18:20', '19:35', '20:30', '21:30', '22:25', '23:00'],
-        ['11:25', '12:25', '12:45', '15:45', '16:50'],
+        ['12:30', '15:30', '18:20', '19:35', '20:30', '21:30', '22:25', '23:00'],
+        ['11:25', '15:30', '12:45', '15:45', '16:50'],
         ['10:30', '11:45', '12:00', '13:25', '15:25', '20:25'],
         ['12:20', '14:20', '16:20', '17:45', '18:25', '19:45', '20:45'],
         [],
@@ -38,14 +37,19 @@ const PopUp = () => {
 
     // to store the timeslots with their dates
     const handleTimeSlot = (rowIndex, colIndex) => {
-        if ((selectedTimes.filter((key) => key?.date === weekDates[rowIndex].toDateString() && key?.time === randomTime[rowIndex][colIndex])).length > 0) {
-            const tempSelected = [...selectedTimes].filter((date) => date?.date !== weekDates[rowIndex].toDateString() && date?.time !== randomTime[rowIndex][colIndex])
+        // if ((selectedTimes.filter((key) => key?.date === weekDates[rowIndex].toDateString() && key?.time === randomTime[rowIndex][colIndex])).length > 0) {
+        //     const tempSelected = [...selectedTimes].filter((date) => date?.date !== weekDates[rowIndex].toDateString() && date?.time !== randomTime[rowIndex][colIndex])
+        //     setSelectedTimes(tempSelected);
+        // }
+        if ((selectedTimes.filter((key) => key.id === (weekDates[rowIndex].toDateString().split(' ').join('') + randomTime[rowIndex][colIndex]))).length > 0) {
+            const tempSelected = [...selectedTimes].filter((key) => key.id !== (weekDates[rowIndex].toDateString().split(' ').join('') + randomTime[rowIndex][colIndex]))
             setSelectedTimes(tempSelected);
         }
         else {
             const newTime = {
                 date: weekDates[rowIndex].toDateString(),
-                time: randomTime[rowIndex][colIndex]
+                time: randomTime[rowIndex][colIndex],
+                id: weekDates[rowIndex].toDateString().split(' ').join('') + randomTime[rowIndex][colIndex]
             }
 
             const tempSelected = [...selectedTimes];
@@ -137,7 +141,7 @@ const PopUp = () => {
                                     <div key={rowIndex} className='flex flex-col w-full gap-3'>
                                         {times.length > 0 ? (
                                             times?.map((time, colIndex) => (
-                                                <p key={colIndex} className={`font-medium sm:font-semibold text-sm px-[3px] sm:px-3 sm:py-[1px] rounded-full cursor-pointer transition duration-200 text-center ${(selectedTimes.filter((key) => key?.date === weekDates[rowIndex].toDateString() && key?.time === randomTime[rowIndex][colIndex])).length > 0 ? 'bg-[#FC4D6D] text-white' : ''}`}
+                                                <p key={colIndex} className={`font-medium sm:font-semibold text-sm px-[3px] sm:px-3 sm:py-[1px] rounded-full cursor-pointer transition duration-200 text-center ${(selectedTimes.filter((key) => key.id === (weekDates[rowIndex].toDateString().split(' ').join('') + randomTime[rowIndex][colIndex]))).length > 0 ? 'bg-[#FC4D6D] text-white' : ''}`}
                                                     onClick={() => handleTimeSlot(rowIndex, colIndex)}
                                                 >
                                                     {time}
@@ -156,7 +160,7 @@ const PopUp = () => {
                 </div>
 
                 {/* bottom */}
-                <div className=' flex items-center justify-between gap-4 w-full px-3 bottom-0'>
+                <div className='flex items-center justify-between gap-4 w-full px-3 bottom-0'>
                     {/* Left */}
                     <div className='flex justify-center items-center gap-2'>
                         <div className='text-[#373737] font-medium'>
